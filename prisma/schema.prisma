@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// User information
+model User {
+  id                Int                @id @default(autoincrement())
+  email             String             @unique
+  password          String
+  name              String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  profile           Profile?
+  nutritionPlans    NutritionPlan?
+  foodConsumptions  FoodConsumption[]
+  weightRecords     WeightRecord[]
+}
+
+// User profile containing physical attributes
+model Profile {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @unique
+  age             Int
+  gender          Gender
+  height          Float     // in cm
+  currentWeight   Float     // in kg
+  goalWeight      Float?    // in kg
+  activityLevel   Int       // 1-4 (sedentary to very active)
+  goal            Goal
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// User's nutrition plan calculated based on profile
+model NutritionPlan {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @unique
+  dailyCalories   Float
+  dailyProte      Float     // in grams
+  dailyFatin      Float     // in grams
+  dailyCarbs      Float     // in grams
+  dailySugar      Float     // in grams
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+// Record of food consumption
+model FoodConsumption {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  foodId          Int
+  calories        Float              // per 100g
+  protein         Float              // per 100g
+  carbs           Float              // per 100g
+  fat             Float              // per 100g
+  sugar           Float              // per 100g
+  quantity        Float     // Number of servings
+  status          Boolean @default(false)
+  mealType        MealType
+  consumedAt      ConsumeType
+  createdAt       DateTime  @default(now())
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Track user's weight over time
+model WeightRecord {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  weight          Float     
+  recordedAt      DateTime
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Enums
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum ConsumeType {
+  BREAKFAST
+  LUNCH
+  DINNER
+}
+
+enum Goal {
+  WEIGHT_LOSS
+  WEIGHT_GAIN
+  MAINTENANCE
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
