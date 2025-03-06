@@ -8,7 +8,7 @@ export class UserValidation {
   });
 
   static readonly UPDATE_USER: ZodType = z.object({
-    username: z.string().min(3).max(20).optional(),
+    name: z.string().min(3).max(20).optional(),
     email: z.string().email().optional(),
     password: z.string().min(8).max(20).optional()
   });
@@ -19,7 +19,7 @@ export class UserValidation {
   });
 
   static readonly DELETE_USER: ZodType = z.object({
-    id: z.number().positive()
+    id: z.string()
   });
 
   static readonly LOGOUT: ZodType = z.object({

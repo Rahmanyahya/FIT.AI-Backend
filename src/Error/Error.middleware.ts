@@ -11,15 +11,15 @@ export const ErrorMiddleware = (
   if (err instanceof ZodError) {
     const messages: string[] = err.errors.map((issue) => issue.message);
     res.status(400).json({
-      errors: `something went wrong, ${messages}`
+      errors: messages
     });
   } else if (err instanceof ErrorHandler) {
     res.status(err.status).json({
-      errors: `something went wrong, ${err.message}`
+      errors: err.message
     });
   } else {
     res.status(500).json({
-      errors: `something went wrong, ${err.message}`
+      errors: err.message
     });
   }
   next();

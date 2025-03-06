@@ -18,17 +18,24 @@ export type updateUser = {
 };
 
 export type deleteUser = {
-  id: number;
+  id: string;
 };
+
+export type getProfile = {
+  id: string
+}
 
 export type userResponse = {
   name: string;
   token?: string;
+  email?: string;
 };
 
-export function toUserResponse(user: User, token?: string): userResponse {
+export function toUserResponse(user: User, token?: string) {
+  console.dir(token, { null: false})
   return {
     name: user.name,
+    email: user.email,
     token
   };
 }

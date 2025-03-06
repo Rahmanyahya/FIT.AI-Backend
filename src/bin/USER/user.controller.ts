@@ -5,15 +5,16 @@ import {
   userLogin,
 } from "./user.model";
 import { UserService } from "./user.service";
+import { CustomRequest } from "../../config/config";
 
 export class UserController {
   static async Register(
-    req: Request,
+    req: CustomRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const userRequest: registerUser = req.body as registerUser;
+      const userRequest: registerUser = req.body as registerUser 
 
       const response = await UserService.userRegister(userRequest);
 
@@ -24,7 +25,7 @@ export class UserController {
   }
 
   static async Login(
-    req: Request,
+    req: CustomRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -39,17 +40,33 @@ export class UserController {
     }
   }
 
-  static async Update(
-    req: Request,
+  static async GetProfile(
+    req: CustomRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId: number = parseInt(req.params.id);
+      const id: string = req.params.id;
 
-      const userRequest: updateUser = req.body as updateUser;
+      const response = await UserService.getProfile({id}, req.id!);
 
-      const response = await UserService.updateUser(userRequest, userId);
+      res.status(200).json({ success: true, data: response });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async Update(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const id: string = req.params.id;
+
+      const userRequest: updateUser = req.body as updateUser
+
+      const response = await UserService.updateUser(userRequest, id, req.id!);
 
       res.status(200).json({ success: true, data: response });
     } catch (e) {
@@ -58,18 +75,30 @@ export class UserController {
   }
 
   static async Delete(
-    req: Request,
+    req: CustomRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const id: number = parseInt(req.params.id);
+      const id: string = req.params.id;
 
-      const response = await UserService.deleteUser({ id });
+      const response = await UserService.deleteUser({id}, req.id!);
 
       res.status(200).json({ success: true, data: response });
     } catch (e) {
       next(e);
+    }
+  }
+
+  static async getProfile(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+     const id: string = req.params.id;
+     
+     const response = await UserService.getProfile({id}, req.id!);
+
+     res.status(200).json({ success: true, data: response });
+    } catch (e) {
+      next(e)
     }
   }
 }
