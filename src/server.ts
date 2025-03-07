@@ -17,7 +17,7 @@ app.use(cors({ origin: "*" }));
 app.use(helmet());
 
 // Aplly Router
-app.use(Router)
+app.use(Router);
 
 // Aplly Error Mindleware
 app.use(ErrorMiddleware);

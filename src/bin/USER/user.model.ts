@@ -22,8 +22,8 @@ export type deleteUser = {
 };
 
 export type getProfile = {
-  id: string
-}
+  id: string;
+};
 
 export type userResponse = {
   name: string;
@@ -32,7 +32,6 @@ export type userResponse = {
 };
 
 export function toUserResponse(user: User, token?: string) {
-  console.dir(token, { null: false})
   return {
     name: user.name,
     email: user.email,

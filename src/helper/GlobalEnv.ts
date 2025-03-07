@@ -1,7 +1,8 @@
-import dotenv from 'dotenv/config'
+import dotenv from "dotenv";
+dotenv.config()
 
 export const GlobalEnv = {
-    PORT: process.env.PORT,
-    REDIS_URL: process.env.REDIS_URL,
-    JWT_SECRET: process.env.JWT_SECRET,
-}
+  PORT: process.env.PORT,
+  REDIS_URL: process.env.REDIS_URL,
+  JWT_SECRET: process.env.JWT_SECRET
+};

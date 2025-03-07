@@ -1,9 +1,5 @@
-import { NextFunction, Request, Response } from "express";
-import {
-  registerUser,
-  updateUser,
-  userLogin,
-} from "./user.model";
+import { NextFunction, Response } from "express";
+import { registerUser, updateUser, userLogin } from "./user.model";
 import { UserService } from "./user.service";
 import { CustomRequest } from "../../config/config";
 
@@ -14,7 +10,7 @@ export class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userRequest: registerUser = req.body as registerUser 
+      const userRequest: registerUser = req.body as registerUser;
 
       const response = await UserService.userRegister(userRequest);
 
@@ -48,7 +44,7 @@ export class UserController {
     try {
       const id: string = req.params.id;
 
-      const response = await UserService.getProfile({id}, req.id!);
+      const response = await UserService.getProfile({ id }, req.id!);
 
       res.status(200).json({ success: true, data: response });
     } catch (e) {
@@ -64,7 +60,7 @@ export class UserController {
     try {
       const id: string = req.params.id;
 
-      const userRequest: updateUser = req.body as updateUser
+      const userRequest: updateUser = req.body as updateUser;
 
       const response = await UserService.updateUser(userRequest, id, req.id!);
 
@@ -82,7 +78,7 @@ export class UserController {
     try {
       const id: string = req.params.id;
 
-      const response = await UserService.deleteUser({id}, req.id!);
+      const response = await UserService.deleteUser({ id }, req.id!);
 
       res.status(200).json({ success: true, data: response });
     } catch (e) {
@@ -90,15 +86,19 @@ export class UserController {
     }
   }
 
-  static async getProfile(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+  static async getProfile(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-     const id: string = req.params.id;
-     
-     const response = await UserService.getProfile({id}, req.id!);
+      const id: string = req.params.id;
 
-     res.status(200).json({ success: true, data: response });
+      const response = await UserService.getProfile({ id }, req.id!);
+
+      res.status(200).json({ success: true, data: response });
     } catch (e) {
-      next(e)
+      next(e);
     }
   }
 }

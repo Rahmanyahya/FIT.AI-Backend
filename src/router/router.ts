@@ -19,12 +19,23 @@ Router.post(`${BaseUrl}/login`, UserController.Login);
 // Register
 Router.post(`${BaseUrl}/register`, UserController.Register);
 
-// Edit 
-Router.put(`${BaseUrl}/user/:id`, jwtService.verifyToken ,UserController.Update);
+// Edit
+Router.put(
+  `${BaseUrl}/user/:id`,
+  jwtService.verifyToken,
+  UserController.Update
+);
 
 // Delete
-Router.delete(`${BaseUrl}/user/:id`, jwtService.verifyToken ,UserController.Delete);
+Router.delete(
+  `${BaseUrl}/user/:id`,
+  jwtService.verifyToken,
+  UserController.Delete
+);
 
 // Get Profile
-Router.get(`${BaseUrl}/user/me/:id`, jwtService.verifyToken , UserController.getProfile);
-
+Router.get(
+  `${BaseUrl}/user/me/:id`,
+  jwtService.verifyToken,
+  UserController.getProfile
+);
