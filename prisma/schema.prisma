@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = ""
+}
+
+
+// User information
+model User {
+  id                String               @id @default(uuid())
+  email             String             @unique
+  password          String
+  name              String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  token            String?  @unique
+  profile           Profile?
+  nutritionPlans    NutritionPlan?
+  foodConsumptions  FoodConsumption[]
+  dailyRecord DailyRecordConsuming[]
+}
+
+// User profile containing physical attributes
+model Profile {
+  id              String       @id @default(uuid())
+  userId          String       @unique
+  age             Int
+  gender          Gender
+  height          Float     // in cm
+  currentWeight   Float     // in kg
+  goalWeight      Float?    // in kg
+  activityLevel   Int       // 1-4 (sedentary to very active)
+  goal            Goal
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// User's nutrition plan calculated based on profile
+model NutritionPlan {
+  id              String       @id @default(uuid())
+  userId          String       @unique
+  dailyCalories   Float
+  dailyProtein    Float     // in grams
+  dailyFatin      Float     // in grams
+  dailyCarbs      Float     // in grams
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
+
+// Record of food consumption
+model FoodConsumption {
+  id              String     @id @default(uuid())
+  name            String 
+  dailyRecord     String?    @unique
+  userId          String
+  calories        Float              // per 100g
+  protein         Float              // per 100g
+  carbs           Float              // per 100g
+  fat             Float              // per 100g
+  status          Boolean @default(false)
+  foodType        FoodType
+  createdAt       DateTime  @default(now())
+  food            DailyRecordConsuming?    @relation(fields: [dailyRecord], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
+// Daily Record 
+model DailyRecordConsuming {
+  id              String       @id @default(uuid())
+  userId          String       @unique
+  totalCalories   Float        @default(0)
+  totalProte      Float        @default(0)
+  totalFatin      Float        @default(0)
+  totalCarbs      Float        @default(0)
+  createdAt DateTime @default(now())
+  updatedAt       DateTime  @updatedAt
+  foods           FoodConsumption[]
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, createdAt])
+}
+
+// Enums
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum FoodType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACKS
+  DRINK
+  CARBS
+}
+
+enum Goal {
+  WEIGHT_LOSS
+  WEIGHT_GAIN
+  MAINTENANCE
+}
