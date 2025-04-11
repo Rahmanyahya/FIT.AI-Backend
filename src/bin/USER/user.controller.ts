@@ -72,7 +72,6 @@ export class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const id: string = req.params.id;
 
       const response = await UserService.deleteUser({ id: req.id! });
 

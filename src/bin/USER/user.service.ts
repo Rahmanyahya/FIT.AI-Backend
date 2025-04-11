@@ -1,5 +1,6 @@
 import logger from "../../config/logger";
 import prisma from "../../config/prisma";
+import { ErrorHandler } from "../../Error/ErrorHandler";
 import { jwtService } from "../../helper/jwt";
 import { decryptor, encryptor } from "../../utils/kriptografi";
 import { Validation } from "../../validator/validation";
@@ -30,7 +31,7 @@ export class UserService {
     if (isUserExist != 0) {
       logger.warn(ctx, "User already exist", scp);
 
-      throw new Error("User already exist");
+      throw new ErrorHandler(400,"User already exist");
     }
 
     const hashedPassword = await bcrypt.hash(userRequest.password, 10);
@@ -58,14 +59,14 @@ export class UserService {
 
     if (!user) {
       logger.warn(ctx, "User not found", scp);
-      throw new Error("User not found");
+      throw new ErrorHandler(404,"User not found");
     }
 
     // Cek password
     const isPasswordMatch = await bcrypt.compare(userRequest.password, user.password);
     if (!isPasswordMatch) {
       logger.warn(ctx, "Invalid password", scp);
-      throw new Error("Invalid password");
+      throw new ErrorHandler(400,"Invalid password");
     }
 
     // Simpan ID asli sebelum enkripsi
@@ -110,7 +111,7 @@ export class UserService {
 
     if (!user) {
       logger.warn(ctx, "User not found", scp);
-      throw new Error("User not found");
+      throw new ErrorHandler(404,"User not found");
     }
 
     logger.info(ctx, "Get User Success", scp);
@@ -134,7 +135,7 @@ export class UserService {
 
     if (!isUserExist) {
       logger.warn(ctx, "User not found", scp);
-      throw new Error("User not found");
+      throw new ErrorHandler(404,"User not found");
     }
 
     userRequest.email ??= isUserExist.email;
@@ -164,7 +165,7 @@ export class UserService {
 
     if (!isUserExist) {
       logger.warn(ctx, "User not found", scp);
-      throw new Error("User not found");
+      throw new ErrorHandler(404,"User not found");
     }
 
     await prisma.user.delete({

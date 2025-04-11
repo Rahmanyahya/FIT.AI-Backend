@@ -7,7 +7,7 @@ export class RECORD_VALIDATION {
     })
 
     static readonly GET_FOOD_REQUEST: ZodType = z.object({
-        start: z.date(),
-        end: z.date()
+        start: z.date().default(new Date()).optional(),
+        end: z.date().default(new Date()).optional()
     })
 }

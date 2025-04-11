@@ -19,7 +19,7 @@ export const ErrorMiddleware = (
     });
   } else {
     res.status(500).json({
-      errors: err
+      errors: err.message
     });
   }
   next();

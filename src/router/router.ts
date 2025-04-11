@@ -81,10 +81,10 @@ Router.get(
 Router.get(`${BaseUrl}/record/me/`, jwtService.verifyToken, RecordController.GetRecord)
 
 // Add Food To Record
-Router.put(`${BaseUrl}/record`, jwtService.verifyToken, RecordController.Record)
+Router.put(`${BaseUrl}/record/:foodId`, jwtService.verifyToken, RecordController.Record)
 
 // Remove Food From Record
-Router.put(`${BaseUrl}/record`, jwtService.verifyToken, RecordController.UnRecord)
+Router.put(`${BaseUrl}/unrecord/:foodId`, jwtService.verifyToken, RecordController.UnRecord)
 
 /**
  * API FOR GET FOODS

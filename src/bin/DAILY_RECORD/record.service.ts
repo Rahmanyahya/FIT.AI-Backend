@@ -3,7 +3,7 @@ import prisma from "../../config/prisma";
 import { ErrorHandler } from "../../Error/ErrorHandler";
 import { decryptor } from "../../utils/kriptografi";
 import { Validation } from "../../validator/validation";
-import { FoodRecordRequest, getRecord, RecordResponse, toFoodRecordResponse } from "./record.model";
+import { FoodRecordRequest, getRecord, RecordResponse, toFoodRecordResponse, toFoodRecordResponse2 } from "./record.model";
 import { RECORD_VALIDATION } from "./record.validation";
 
 export class RecordService {
@@ -39,7 +39,12 @@ export class RecordService {
 
     if (!food) {
         logger.warn(ctx, "Food not found", scp);
-        throw new Error("Food not found");
+        throw new ErrorHandler(404,"Food not found");
+    }
+
+    if (food.status) {
+        logger.warn(ctx, "Duplicate list", scp);
+        throw new ErrorHandler(400,"Duplicate list");
     }
 
     await prisma.foodConsumption.update({
@@ -96,7 +101,12 @@ static async UnRecordFood (req: FoodRecordRequest): Promise<RecordResponse> {
 
     if (!food) {
         logger.warn(ctx, "Food not found", scp);
-        throw new Error("Food not found");
+        throw new ErrorHandler(404,"Food not found");
+    }
+
+    if (!food.status) {
+        logger.warn(ctx, "Duplicate list", scp);
+        throw new ErrorHandler(400,"Duplicate list");
     }
 
     await prisma.foodConsumption.update({
@@ -124,30 +134,50 @@ static async UnRecordFood (req: FoodRecordRequest): Promise<RecordResponse> {
 static async GetFoodRecord (req: getRecord, personalId: string): Promise<RecordResponse[]> {
     const ctx = "Get Food Record";
     const scp = "Record Food";
-    
+  
     const userRequest = Validation.validate(RECORD_VALIDATION.GET_FOOD_REQUEST, req);
-
     const userId = decryptor(personalId);
-    let dailyRecords = await prisma.dailyRecordConsuming.findMany({
+  
+    const startDate = userRequest.start
+      ? new Date(new Date(userRequest.start).setHours(0, 0, 0, 0))
+      : new Date(new Date().setHours(0, 0, 0, 0));
+  
+    const endDate = userRequest.end
+      ? new Date(new Date(userRequest.end).setHours(23, 59, 59, 999))
+      : new Date(new Date().setHours(23, 59, 59, 999));
+  
+      const dailyRecords = await prisma.dailyRecordConsuming.findMany({
         where: {
-            userId,
-            createdAt: {
-                gte: new Date(userRequest.start),
-                lt: new Date(userRequest.end)
+          userId,
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+          foods: {
+            some: {
+              status: true, // hanya ambil dailyRecord yang punya minimal 1 food status true
             }
+          }
         },
         include: {
-            foods: true
-        }
-    });
-
+          foods: {
+            where: {
+              status: true, // hanya ambil foods dengan status true
+            },
+          },
+        },
+      });
+      
+  
     if (!dailyRecords.length) {
-        logger.warn(ctx, "No record found", scp);
-        throw new ErrorHandler(404, 'no record matches')
+      logger.warn(ctx, "No record found", scp);
+      throw new ErrorHandler(404, 'no record matches');
     }
-
+  
     logger.info(ctx, "Get Food Record Success", scp);
-    return Promise.all(dailyRecords.map(toFoodRecordResponse))
-}
+  
+    return Promise.all(dailyRecords.map(toFoodRecordResponse2));
+  }
+  
 
 }

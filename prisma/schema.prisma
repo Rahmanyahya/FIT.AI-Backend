@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = ""
+  url      = env("DATABASE_URL")
 }
 
 
@@ -64,7 +64,7 @@ model NutritionPlan {
 model FoodConsumption {
   id              String     @id @default(uuid())
   name            String 
-  dailyRecord     String?    @unique
+  dailyRecord     String?    
   userId          String
   calories        Float              // per 100g
   protein         Float              // per 100g
@@ -81,7 +81,7 @@ model FoodConsumption {
 // Daily Record 
 model DailyRecordConsuming {
   id              String       @id @default(uuid())
-  userId          String       @unique
+  userId          String       
   totalCalories   Float        @default(0)
   totalProte      Float        @default(0)
   totalFatin      Float        @default(0)
@@ -101,12 +101,11 @@ enum Gender {
 }
 
 enum FoodType {
-  BREAKFAST
-  LUNCH
-  DINNER
-  SNACKS
-  DRINK
-  CARBS
+  Breakfast
+  Lunch_Dinner
+  Snack
+  Drink
+  Carbs
 }
 
 enum Goal {

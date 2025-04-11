@@ -1,17 +1,16 @@
 import { FoodType } from "@prisma/client";
 
 export interface Food {
-  name: string;
-  type: FoodType;
-  calories: number;
-  protein: number;
-  carbohydrates: number;
-  fat: number;
+  type: FoodType
+  food: foodDetail
 }
 
-export interface FoodRequest {
-  dailyProtein: number;
-  dailyCarbohydrate: number;
-  dailyCalories: number;
-  dailyFat: number;
-}
+export interface foodDetail {
+  name: string,
+  proteins: number,
+  calories: number,
+  fat: number,
+  carbo: number,
+  status: boolean
+} 
+

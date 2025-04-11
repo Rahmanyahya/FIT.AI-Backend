@@ -27,14 +27,43 @@ export async function toFoodRecordResponse (record: DailyRecordConsuming): Promi
         carbohydrateConsumption: record.totalCarbs,
         fatConsumption: record.totalFatin,
         caloriesConsumption: record.totalCalories,
-        foods: foods.map((item) => ({
-            name: item.name,
-            type: item.foodType,
-            calories: item.calories,
-            protein: item.protein,
-            carbohydrates: item.carbs,
-            fat: item.fat
+        foods: foods.map(detail => ({
+            type: detail.foodType,
+            food: {
+                name: detail.name,
+                calories: detail.calories,
+                carbo: detail.carbs,
+                proteins: detail.protein,
+                fat: detail.fat,
+                status: detail.status
+            }
         }))
     }
 } 
 
+export async function toFoodRecordResponse2 (record: DailyRecordConsuming): Promise<RecordResponse> {
+    const foods = await prisma.foodConsumption.findMany({
+        where: {
+            dailyRecord: record.id,
+            status: true, 
+        },
+    })
+
+    return {
+        proteinConsumtion: record.totalProte,
+        carbohydrateConsumption: record.totalCarbs,
+        fatConsumption: record.totalFatin,
+        caloriesConsumption: record.totalCalories,
+        foods: foods.map(detail => ({
+            type: detail.foodType,
+            food: {
+                name: detail.name,
+                calories: detail.calories,
+                carbo: detail.carbs,
+                proteins: detail.protein,
+                fat: detail.fat,
+                status: detail.status,
+            },
+        })),
+    }
+} 
